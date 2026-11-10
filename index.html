@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pathway Architect — Design System & Style Guide</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Self-contained Google Fonts matching project font packages -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'sans': ['"DM Sans"', 'sans-serif'],
+            'grotesk': ['"Space Grotesk"', 'sans-serif'],
+            'mono': ['"DM Mono"', 'monospace'],
+            'pixel': ['"Press Start 2P"', 'monospace'],
+            'serif': ['"Merriweather"', 'serif'],
+          },
+          colors: {
+            pa: {
+              bg: '#faf8f5',
+              ink: '#23272f',
+              'ink-soft': '#1e242e',
+              sage: '#8b9068',
+              'sage-deep': '#6f765c',
+              'sage-mid': '#9aa37a',
+              'sage-soft': '#f5f7ef',
+              'sage-wash': '#f0f3e8',
+              'sage-border': '#cfd6b8',
+              'sage-snow': '#b0b896',
+              paper: '#ffffff',
+              'paper-tint': '#f7f8f2',
+              muted: '#8a9178',
+              shadow: '#23272f',
+            },
+            admin: {
+              bg: '#161812',
+              card: '#22251c',
+              hover: '#2c3026',
+              border: '#cfd6b829',
+              coral: '#e07a6a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Warm cream grid paper matching student + auth pages */
+    body {
+      background-color: #faf8f5;
+      background-image:
+        linear-gradient(to right, rgba(180, 186, 150, 0.22) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(180, 186, 150, 0.22) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: #23272f;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Brutalist card styling */
+    .brutalist-card {
+      background: #ffffff;
+      border: 2px solid #23272f;
+      border-radius: 6px;
+      box-shadow: 4px 4px 0 #23272f;
+      transition: all 0.15s ease;
+    }
+    
+    .brutalist-card:hover {
+      box-shadow: 5px 5px 0 #23272f;
+      transform: translate(-1px, -1px);
+    }
+
+    .swatch-card {
+      background: #ffffff;
+      border: 1.5px solid #23272f;
+      border-radius: 6px;
+      box-shadow: 2.5px 2.5px 0 #23272f;
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .swatch-card:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 3.5px 3.5px 0 #23272f;
+    }
+    .swatch-card:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #23272f;
+    }
+
+    .btn-brutal-primary {
+      background: #8b9068;
+      color: #ffffff;
+      border: 1.5px solid #23272f;
+      border-radius: 4px;
+      box-shadow: 3px 3px 0 #23272f;
+      font-weight: 600;
+      transition: all 0.12s ease;
+    }
+    .btn-brutal-primary:hover {
+      background: #6f765c;
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0 #23272f;
+    }
+
+    .btn-brutal-secondary {
+      background: #ffffff;
+      color: #23272f;
+      border: 1.5px solid #23272f;
+      border-radius: 4px;
+      box-shadow: 2.5px 2.5px 0 #23272f;
+      font-weight: 600;
+      transition: all 0.12s ease;
+    }
+    .btn-brutal-secondary:hover {
+      background: #f5f7ef;
+      transform: translate(-1px, -1px);
+      box-shadow: 3.5px 3.5px 0 #23272f;
+    }
+
+    /* Fixed toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      transform: translateY(100px);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8">
+
+  <!-- Toast for Click-to-Copy -->
+  <div id="toast" class="opacity-0 pointer-events-none flex items-center gap-2 bg-[#23272f] text-white px-4 py-2.5 rounded-lg border-2 border-black shadow-[4px_4px_0_#000000] font-mono text-xs font-semibold">
+    <span class="text-[#9aa37a]">✓</span>
+    <span id="toast-text">Copied to clipboard</span>
+  </div>
+
+  <div class="max-w-5xl mx-auto space-y-10">
+    
+    <!-- Top Header -->
+    <header class="brutalist-card p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-3.5 h-3.5 bg-pa-sage border border-pa-ink rounded-xs"></span>
+          <span class="font-grotesk font-bold text-xs uppercase tracking-widest text-pa-sage-deep">Design System & Brand Tokens</span>
+        </div>
+        <h1 class="font-grotesk font-bold text-2xl sm:text-3xl text-pa-ink tracking-tight">Pathway Architect</h1>
+        <p class="text-sm text-pa-ink-soft max-w-xl">
+          Quick reference sheet for colors, typography, tokens, and components used across student journeys, auth, and coordinator dashboards.
+        </p>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="px-2.5 py-1 text-xs font-mono font-medium rounded border border-pa-ink bg-pa-sage-soft text-pa-sage-deep">
+          Tailwind v4 + Shadcn
+        </span>
+        <span class="px-2.5 py-1 text-xs font-mono font-medium rounded border border-pa-ink bg-white text-pa-ink">
+          Interactive Swatches
+        </span>
+      </div>
+    </header>
+
+    <!-- Navigation Pills -->
+    <nav class="flex gap-2 border-b border-pa-ink pb-4 overflow-x-auto">
+      <a href="#colors" class="px-3.5 py-1.5 rounded bg-pa-ink text-white font-grotesk text-xs font-semibold shadow-[2px_2px_0_#6f765c]">
+        1. Color Palette
+      </a>
+      <a href="#typography" class="px-3.5 py-1.5 rounded bg-white border border-pa-ink text-pa-ink font-grotesk text-xs font-semibold hover:bg-pa-sage-soft shadow-[2px_2px_0_#23272f]">
+        2. Typography & Fonts
+      </a>
+      <a href="#components" class="px-3.5 py-1.5 rounded bg-white border border-pa-ink text-pa-ink font-grotesk text-xs font-semibold hover:bg-pa-sage-soft shadow-[2px_2px_0_#23272f]">
+        3. UI Components
+      </a>
+    </nav>
+
+    <!-- SECTION 1: COLORS -->
+    <section id="colors" class="space-y-8">
+      <div class="flex items-baseline justify-between border-b border-pa-ink pb-2">
+        <h2 class="font-grotesk font-bold text-xl text-pa-ink">1. Color Palette</h2>
+        <span class="text-xs font-mono text-pa-sage-deep">Click any card to copy HEX</span>
+      </div>
+
+      <!-- 1.1 Brand & Pathway Sage -->
+      <div class="space-y-3">
+        <h3 class="font-grotesk font-bold text-sm text-pa-sage-deep uppercase tracking-wider">
+          A. Brand & Pathway Sage (Core Surface & Buttons)
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#8b9068', 'Primary Sage')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #8b9068;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#8b9068</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Primary Sage</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-sage</div>
+              <p class="text-[11px] text-gray-500 mt-1">Main brand color, primary CTA buttons</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#6f765c', 'Deep Sage')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #6f765c;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#6f765c</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Deep Sage</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-sage-deep</div>
+              <p class="text-[11px] text-gray-500 mt-1">Hover states, dark text on sage backgrounds</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#9aa37a', 'Mid Sage')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #9aa37a;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#9aa37a</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Mid Sage</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-sage-mid</div>
+              <p class="text-[11px] text-gray-500 mt-1">Dark theme primary button color & active pills</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#cfd6b8', 'Sage Border')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #cfd6b8;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#cfd6b8</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Sage Border</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-sage-border</div>
+              <p class="text-[11px] text-gray-500 mt-1">Soft dividers, inputs, container borders</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#faf8f5', 'Cream Background')">
+            <div class="h-20 w-full p-2 flex items-end justify-end border-b border-pa-ink" style="background-color: #faf8f5;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/20 text-pa-ink">#faf8f5</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Cream Canvas</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-bg</div>
+              <p class="text-[11px] text-gray-500 mt-1">Page background for auth, student and light admin</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#f5f7ef', 'Soft Sage')">
+            <div class="h-20 w-full p-2 flex items-end justify-end border-b border-pa-ink" style="background-color: #f5f7ef;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/20 text-pa-ink">#f5f7ef</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Soft Sage</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-sage-soft</div>
+              <p class="text-[11px] text-gray-500 mt-1">Secondary button hover, subtle card fills</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#f0f3e8', 'Sage Wash')">
+            <div class="h-20 w-full p-2 flex items-end justify-end border-b border-pa-ink" style="background-color: #f0f3e8;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/20 text-pa-ink">#f0f3e8</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Sage Wash</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-sage-wash</div>
+              <p class="text-[11px] text-gray-500 mt-1">Muted backgrounds and avatar chips</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#23272f', 'Dark Ink')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #23272f;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-white/30 text-white">#23272f</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Dark Ink</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--pa-ink / shadow</div>
+              <p class="text-[11px] text-gray-500 mt-1">Brutalist borders, hard shadows, headings</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 1.2 Admin & Coordinator Dark Theme -->
+      <div class="space-y-3">
+        <h3 class="font-grotesk font-bold text-sm text-pa-sage-deep uppercase tracking-wider">
+          B. Coordinator & Admin Dark Mode
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#161812', 'Olive Black')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #161812;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-white/30 text-white">#161812</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Olive Black</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--bg / --background</div>
+              <p class="text-[11px] text-gray-500 mt-1">Deep olive-dark dashboard background</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#22251c', 'Dark Card Surface')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #22251c;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-white/30 text-white">#22251c</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Dark Card Surface</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--olive-card / --card</div>
+              <p class="text-[11px] text-gray-500 mt-1">Elevated cards, modals and topbars</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#2c3026', 'Secondary Charcoal')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #2c3026;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-white/30 text-white">#2c3026</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Secondary Charcoal</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--secondary / --bg-hover</div>
+              <p class="text-[11px] text-gray-500 mt-1">Hover states, button containers, pills</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#e07a6a', 'Coral Red')">
+            <div class="h-20 w-full p-2 flex items-end justify-end" style="background-color: #e07a6a;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#e07a6a</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Coral Destructive</div>
+              <div class="font-mono text-xs text-pa-sage-deep">--destructive (dark)</div>
+              <p class="text-[11px] text-gray-500 mt-1">High-contrast soft red for dark mode actions</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 1.3 Semantic Badges & Feedback -->
+      <div class="space-y-3">
+        <h3 class="font-grotesk font-bold text-sm text-pa-sage-deep uppercase tracking-wider">
+          C. Semantic Status & Badges
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
+          
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#15803d', 'Green / Success')">
+            <div class="h-16 w-full flex items-center justify-center p-2" style="background-color: #dcfce7;">
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold text-white shadow-xs" style="background-color: #15803d;">Active</span>
+            </div>
+            <div class="p-2.5 text-center">
+              <div class="font-mono font-bold text-xs text-[#15803d]">#15803d</div>
+              <div class="text-[11px] text-gray-500">bg: #dcfce7</div>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#dc2626', 'Red / Danger')">
+            <div class="h-16 w-full flex items-center justify-center p-2" style="background-color: #fef2f2;">
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold text-white shadow-xs" style="background-color: #dc2626;">Error</span>
+            </div>
+            <div class="p-2.5 text-center">
+              <div class="font-mono font-bold text-xs text-[#dc2626]">#dc2626</div>
+              <div class="text-[11px] text-gray-500">bg: #fef2f2</div>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#b45309', 'Yellow / Warning')">
+            <div class="h-16 w-full flex items-center justify-center p-2" style="background-color: #fef3c7;">
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold text-white shadow-xs" style="background-color: #b45309;">Pending</span>
+            </div>
+            <div class="p-2.5 text-center">
+              <div class="font-mono font-bold text-xs text-[#b45309]">#b45309</div>
+              <div class="text-[11px] text-gray-500">bg: #fef3c7</div>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#1d4ed8', 'Blue / Info')">
+            <div class="h-16 w-full flex items-center justify-center p-2" style="background-color: #dbeafe;">
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold text-white shadow-xs" style="background-color: #1d4ed8;">Info</span>
+            </div>
+            <div class="p-2.5 text-center">
+              <div class="font-mono font-bold text-xs text-[#1d4ed8]">#1d4ed8</div>
+              <div class="text-[11px] text-gray-500">bg: #dbeafe</div>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#7c3aed', 'Purple / Master')">
+            <div class="h-16 w-full flex items-center justify-center p-2" style="background-color: #f3e8ff;">
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold text-white shadow-xs" style="background-color: #7c3aed;">Master</span>
+            </div>
+            <div class="p-2.5 text-center">
+              <div class="font-mono font-bold text-xs text-[#7c3aed]">#7c3aed</div>
+              <div class="text-[11px] text-gray-500">bg: #f3e8ff</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 1.4 Gamification & Map -->
+      <div class="space-y-3">
+        <h3 class="font-grotesk font-bold text-sm text-pa-sage-deep uppercase tracking-wider">
+          D. Student Journey & Map Nodes
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#5c94fc', 'Game Sky Blue')">
+            <div class="h-16 w-full p-2 flex items-end justify-end" style="background-color: #5c94fc;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#5c94fc</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Game Sky Blue</div>
+              <p class="text-[11px] text-gray-500">Classic student map canvas</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#16a34a', 'Node Complete')">
+            <div class="h-16 w-full p-2 flex items-end justify-end" style="background-color: #16a34a;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#16a34a</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Node Done</div>
+              <p class="text-[11px] text-gray-500">Completed roadmap step</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#f59e0b', 'Node In-Progress')">
+            <div class="h-16 w-full p-2 flex items-end justify-end" style="background-color: #f59e0b;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#f59e0b</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Node Current</div>
+              <p class="text-[11px] text-gray-500">Active milestone marker</p>
+            </div>
+          </div>
+
+          <div class="swatch-card overflow-hidden" onclick="copyValue('#64748b', 'Node Locked')">
+            <div class="h-16 w-full p-2 flex items-end justify-end" style="background-color: #64748b;">
+              <span class="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/40 text-white">#64748b</span>
+            </div>
+            <div class="p-3">
+              <div class="font-grotesk font-bold text-sm text-pa-ink">Node Locked</div>
+              <p class="text-[11px] text-gray-500">Upcoming / locked milestone</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: TYPOGRAPHY -->
+    <section id="typography" class="space-y-8">
+      <div class="flex items-baseline justify-between border-b border-pa-ink pb-2">
+        <h2 class="font-grotesk font-bold text-xl text-pa-ink">2. Typography & Fonts</h2>
+        <span class="text-xs font-mono text-pa-sage-deep">5 Self-Hosted Fonts</span>
+      </div>
+
+      <div class="space-y-4">
+        
+        <!-- Font 1: DM Sans -->
+        <div class="brutalist-card p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+            <div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-pa-sage-soft text-pa-sage-deep">Main Global App Font</span>
+              <h3 class="font-sans font-bold text-lg text-pa-ink mt-1">DM Sans</h3>
+            </div>
+            <button onclick="copyValue('font-family: \'DM Sans\', sans-serif;', 'DM Sans CSS')" class="text-xs font-mono px-2.5 py-1 rounded border border-pa-ink bg-pa-bg hover:bg-pa-sage-soft">
+              Copy font-family
+            </button>
+          </div>
+          <p class="text-xs text-gray-600">
+            <strong>Role:</strong> General interface text, dashboard analytics, modals, forms, tables, and data lists. Loaded in 300, 400, 500, 600, 700 + italic.
+          </p>
+          <div class="p-4 bg-pa-bg rounded border border-pa-sage-border space-y-2">
+            <div class="font-sans text-xl font-bold text-pa-ink">
+              The quick brown fox jumps over the lazy dog. 0123456789
+            </div>
+            <div class="font-sans text-sm text-gray-700">
+              Clear, highly legible geometric sans designed specifically for screen density and UI controls.
+            </div>
+          </div>
+        </div>
+
+        <!-- Font 2: Space Grotesk -->
+        <div class="brutalist-card p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+            <div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-pa-sage-soft text-pa-sage-deep">Brand & Surface Font</span>
+              <h3 class="font-grotesk font-bold text-lg text-pa-ink mt-1">Space Grotesk</h3>
+            </div>
+            <button onclick="copyValue('font-family: \'Space Grotesk\', sans-serif;', 'Space Grotesk CSS')" class="text-xs font-mono px-2.5 py-1 rounded border border-pa-ink bg-pa-bg hover:bg-pa-sage-soft">
+              Copy font-family
+            </button>
+          </div>
+          <p class="text-xs text-gray-600">
+            <strong>Role:</strong> Applied to student onboarding, landing page, auth card titles, and brutalist headings. Defined as Tailwind's <code class="font-mono text-pa-sage-deep">--font-sans</code>.
+          </p>
+          <div class="p-4 bg-pa-bg rounded border border-pa-sage-border space-y-2">
+            <div class="font-grotesk text-2xl font-bold text-pa-ink tracking-tight">
+              Brutalist Architecture & High-Impact Headlines
+            </div>
+            <div class="font-grotesk text-sm text-gray-700">
+              Distinctive monospace-derived proportions with proportional metrics for expressive tech branding.
+            </div>
+          </div>
+        </div>
+
+        <!-- Font 3: DM Mono -->
+        <div class="brutalist-card p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+            <div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-pa-sage-soft text-pa-sage-deep">Technical & Metric Font</span>
+              <h3 class="font-mono font-bold text-lg text-pa-ink mt-1">DM Mono</h3>
+            </div>
+            <button onclick="copyValue('font-family: \'DM Mono\', monospace;', 'DM Mono CSS')" class="text-xs font-mono px-2.5 py-1 rounded border border-pa-ink bg-pa-bg hover:bg-pa-sage-soft">
+              Copy font-family
+            </button>
+          </div>
+          <p class="text-xs text-gray-600">
+            <strong>Role:</strong> Milestone nodes, IDs, hashes, timestamps, stat counter numbers, and code blocks.
+          </p>
+          <div class="p-4 bg-pa-bg rounded border border-pa-sage-border space-y-2">
+            <div class="font-mono text-base font-medium text-pa-ink">
+              STAGE_04 // MILESTONE_ID: #8B9068-STU // XP_REQ: 1,450
+            </div>
+            <div class="font-mono text-xs text-gray-600">
+              ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 {}[]()&lt;&gt;
+            </div>
+          </div>
+        </div>
+
+        <!-- Font 4: Press Start 2P -->
+        <div class="brutalist-card p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+            <div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">8-Bit Gamification Accent</span>
+              <h3 class="font-pixel text-sm text-pa-ink mt-1">Press Start 2P</h3>
+            </div>
+            <button onclick="copyValue('font-family: \'Press Start 2P\', monospace;', 'Press Start 2P CSS')" class="text-xs font-mono px-2.5 py-1 rounded border border-pa-ink bg-pa-bg hover:bg-pa-sage-soft">
+              Copy font-family
+            </button>
+          </div>
+          <p class="text-xs text-gray-600">
+            <strong>Role:</strong> Student quest points, level badges, XP bonuses (+50 XP), pixel compass, retro arcade headers.
+          </p>
+          <div class="p-4 bg-[#23272f] rounded border border-pa-ink space-y-2">
+            <div class="font-pixel text-xs text-[#9aa37a] leading-loose">
+              +150 XP BONUS REACHED! LEVEL UP!
+            </div>
+            <div class="font-pixel text-[10px] text-white">
+              QUEST COMPLETED: ARCHITECT FOUNDATIONS
+            </div>
+          </div>
+        </div>
+
+        <!-- Font 5: Merriweather -->
+        <div class="brutalist-card p-5 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
+            <div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-pa-sage-soft text-pa-sage-deep">Editorial Serif Accent</span>
+              <h3 class="font-serif font-bold text-lg text-pa-ink mt-1">Merriweather</h3>
+            </div>
+            <button onclick="copyValue('font-family: \'Merriweather\', serif;', 'Merriweather CSS')" class="text-xs font-mono px-2.5 py-1 rounded border border-pa-ink bg-pa-bg hover:bg-pa-sage-soft">
+              Copy font-family
+            </button>
+          </div>
+          <p class="text-xs text-gray-600">
+            <strong>Role:</strong> Editorial headings configured in Tailwind token <code class="font-mono text-pa-sage-deep">--font-heading</code>.
+          </p>
+          <div class="p-4 bg-pa-bg rounded border border-pa-sage-border space-y-2">
+            <div class="font-serif text-xl font-bold text-pa-ink">
+              Empowering Students to Architect Their Future
+            </div>
+            <div class="font-serif italic text-sm text-gray-700">
+              A high-readability serif typeface designed specifically for pleasant reading on computer screens.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: UI COMPONENTS PREVIEW -->
+    <section id="components" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b border-pa-ink pb-2">
+        <h2 class="font-grotesk font-bold text-xl text-pa-ink">3. Component Showcase</h2>
+        <span class="text-xs font-mono text-pa-sage-deep">Brutalist Style</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Buttons & Controls -->
+        <div class="brutalist-card p-6 space-y-4">
+          <h3 class="font-grotesk font-bold text-sm text-pa-ink uppercase tracking-wider">Button Styles</h3>
+          <div class="flex flex-wrap gap-3 items-center">
+            <button class="btn-brutal-primary px-4 py-2 text-sm">Primary Sage</button>
+            <button class="btn-brutal-secondary px-4 py-2 text-sm">Secondary Paper</button>
+            <button class="px-4 py-2 text-sm font-semibold rounded bg-red-600 hover:bg-red-700 text-white border-1.5 border-black shadow-[2.5px_2.5px_0_#23272f]">
+              Destructive
+            </button>
+          </div>
+          
+          <div class="pt-3 border-t border-gray-200 space-y-2">
+            <label class="block text-xs font-bold text-pa-ink font-grotesk">Brutalist Form Input</label>
+            <input type="text" placeholder="e.g. adrian@pathway.edu" class="w-full px-3.5 py-2 text-sm bg-white border-2 border-pa-ink rounded focus:outline-none focus:ring-2 focus:ring-pa-sage font-sans shadow-[2px_2px_0_#cfd6b8]" value="student.demo@pathway.edu">
+          </div>
+        </div>
+
+        <!-- Badges & Gamification -->
+        <div class="brutalist-card p-6 space-y-4">
+          <h3 class="font-grotesk font-bold text-sm text-pa-ink uppercase tracking-wider">Badges & XP Tags</h3>
+          
+          <div class="flex flex-wrap gap-2">
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#dcfce7] text-[#15803d]">✓ Milestone 4</span>
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#fef3c7] text-[#b45309]">⏱ In Progress</span>
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#fef2f2] text-[#dc2626]">✕ Blocked</span>
+            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-[#dbeafe] text-[#1d4ed8]">ℹ Core Path</span>
+          </div>
+
+          <div class="p-3.5 bg-pa-bg border border-pa-sage-border rounded flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="font-pixel text-[11px] text-pa-sage-deep">STAGE 01</span>
+              <span class="font-mono text-xs text-gray-500">Explorer</span>
+            </div>
+            <span class="font-pixel text-[10px] text-emerald-700 bg-emerald-100 px-2 py-1 rounded border border-emerald-300">
+              +500 XP
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center pt-8 pb-12 border-t border-pa-ink/20 text-xs font-mono text-pa-sage-deep">
+      Pathway Architect • Design Token Specification • Ready for Notion Embed
+    </footer>
+
+  </div>
+
+  <script>
+    let toastTimeout;
+    function copyValue(val, label) {
+      navigator.clipboard.writeText(val).then(() => {
+        const toast = document.getElementById('toast');
+        const text = document.getElementById('toast-text');
+        text.innerText = `Copied ${label || val} (${val})`;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 1800);
+      });
+    }
+  </script>
+</body>
+</html>
